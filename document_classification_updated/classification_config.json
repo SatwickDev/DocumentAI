@@ -1,0 +1,98 @@
+{
+    "default_pages_per_pdf": 1,
+    "min_text_length": 5,
+    "tesseract_configs": [
+        "--oem 3 --psm 6 -c tessedit_char_whitelist=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.,:-/()",
+        "--oem 3 --psm 3",
+        "--oem 3 --psm 11"
+    ],
+    "categories": {
+        "Purchase Order": {
+            "keywords": [
+                {"keyword": "purchase order", "weight": 3.5},
+                {"keyword": "po number", "weight": 2.5},
+                {"keyword": "order date", "weight": 1.5},
+                {"keyword": "contract ref", "weight": 1.5},
+                {"keyword": "buyer:", "weight": 1.2},
+                {"keyword": "supplier:", "weight": 1.2},
+                {"keyword": "po", "weight": 2.0},
+                {"keyword": "p.o.", "weight": 2.0},
+                {"keyword": "purchaseorder", "weight": 3.0},
+                {"keyword": "vendor", "weight": 1.2},
+                {"keyword": "purchase", "weight": 0.8},
+                {"keyword": "quantity", "weight": 1.0},
+                {"keyword": "unit price", "weight": 1.0},
+                {"keyword": "total amount", "weight": 1.0},
+                {"keyword": "delivery date", "weight": 1.0},
+                {"keyword": "terms and conditions", "weight": 1.0},
+                {"keyword": "payment terms", "weight": 1.0},
+                {"keyword": "shipping address", "weight": 1.0},
+                {"keyword": "billing address", "weight": 1.0},
+                {"keyword": "order confirmation", "weight": 1.5},
+                {"keyword": "procurement", "weight": 1.0}
+            ],
+            "always_separate": true,
+            "max_pages_per_pdf": 1
+        },
+        "LC Application Form": {
+            "keywords": [
+                {"keyword": "application for issue of documentary credit", "weight": 4.5},
+                {"keyword": "documentary credit", "weight": 3.5},
+                {"keyword": "import letter of credit", "weight": 3.5},
+                {"keyword": "lc application", "weight": 3.0},
+                {"keyword": "import lc limit", "weight": 3.0},
+                {"keyword": "irrevocable lc", "weight": 3.0},
+                {"keyword": "documents required", "weight": 2.5},
+                {"keyword": "draft for 100% of invoice value", "weight": 3.0},
+                {"keyword": "air way bill", "weight": 2.5},
+                {"keyword": "commercial invoice", "weight": 2.0},
+                {"keyword": "packing list", "weight": 2.0},
+                {"keyword": "bill of lading", "weight": 2.0},
+                {"keyword": "applicant:", "weight": 2.0},
+                {"keyword": "issuing bank:", "weight": 2.0},
+                {"keyword": "advising bank", "weight": 2.0},
+                {"keyword": "beneficiary:", "weight": 2.0},
+                {"keyword": "lc no", "weight": 2.5},
+                {"keyword": "lc number", "weight": 2.5},
+                {"keyword": "credit amount", "weight": 1.5},
+                {"keyword": "additional conditions", "weight": 2.0},
+                {"keyword": "all documents must mention", "weight": 2.0},
+                {"keyword": "application", "weight": 1.5},
+                {"keyword": "letter of credit", "weight": 3.0},
+                {"keyword": "l/c", "weight": 2.5},
+                {"keyword": "credit facility", "weight": 2.0},
+                {"keyword": "export documents", "weight": 2.0},
+                {"keyword": "shipping documents", "weight": 2.0},
+                {"keyword": "trade finance", "weight": 2.0}
+            ],
+            "always_separate": false,
+            "max_pages_per_pdf": 5
+        },
+        "Proforma Invoice": {
+            "keywords": [
+                {"keyword": "proforma", "weight": 2.0},
+                {"keyword": "proforma invoice", "weight": 3.0},
+                {"keyword": "pi no", "weight": 2.0},
+                {"keyword": "pi-", "weight": 1.5},
+                {"keyword": "pf-", "weight": 1.5},
+                {"keyword": "authorized signatory (seller)", "weight": 2.5}
+            ],
+            "always_separate": true,
+            "max_pages_per_pdf": 1
+        },
+        "Bank Guarantee": {
+            "keywords": [
+                {"keyword": "bank guarantee", "weight": 3.0},
+                {"keyword": "guarantee number", "weight": 2.0},
+                {"keyword": "bg no", "weight": 2.0}
+            ],
+            "always_separate": false,
+            "max_pages_per_pdf": 5
+        },
+        "Unclassified": {
+            "keywords": [],
+            "always_separate": false,
+            "max_pages_per_pdf": 1
+        }
+    }
+}

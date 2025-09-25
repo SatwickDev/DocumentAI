@@ -1,0 +1,124 @@
+# Docker Compose for Document Processing Microservices
+version: '3.8'
+
+services:
+  # API Gateway - Entry point for all requests
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    ports:
+      - "8000:8000"
+    depends_on:
+      - classification-service
+      - quality-service
+      - redis
+    environment:
+      - CLASSIFICATION_SERVICE_URL=http://classification-service:8001
+      - QUALITY_SERVICE_URL=http://quality-service:8002
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - document-processing
+
+  # Document Classification Service
+  classification-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.classification
+    ports:
+      - "8001:8001"
+    environment:
+      - TESSERACT_CMD=/usr/bin/tesseract
+      - CONFIG_PATH=/app/config/classification_config.json
+      - OUTPUT_BASE_PATH=/app/output
+    volumes:
+      - ./config:/app/config:ro
+      - ./output:/app/output
+      - ./logs:/app/logs
+    networks:
+      - document-processing
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Quality Analysis Service  
+  quality-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.quality
+    ports:
+      - "8002:8002"
+    environment:
+      - CONFIG_PATH=/app/config/TresholdConfig.json
+    volumes:
+      - ./config:/app/config:ro
+      - ./output:/app/output
+      - ./logs:/app/logs
+    networks:
+      - document-processing
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis for caching and session management
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - document-processing
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Optional: Nginx for load balancing (uncomment for production)
+  # nginx:
+  #   image: nginx:alpine
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf:ro
+  #     - ./ssl:/etc/ssl:ro
+  #   depends_on:
+  #     - api-gateway
+  #   networks:
+  #     - document-processing
+
+  # Optional: PostgreSQL for persistent storage (uncomment if needed)
+  # postgres:
+  #   image: postgres:15-alpine
+  #   environment:
+  #     POSTGRES_DB: document_processing
+  #     POSTGRES_USER: docuser
+  #     POSTGRES_PASSWORD: docpass123
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   networks:
+  #     - document-processing
+
+volumes:
+  redis_data:
+    driver: local
+  # postgres_data:
+  #   driver: local
+
+networks:
+  document-processing:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

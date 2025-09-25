@@ -1,0 +1,13 @@
+
+    This is a high-quality test document with excellent formatting and clear content.
+    The document contains proper structure, good grammar, and comprehensive information.
+    
+    Key Features:
+    - Well-formatted text
+    - Clear sections
+    - Professional language
+    - Comprehensive content
+    
+    This document should score highly in quality analysis and demonstrate
+    the smart preprocessing decision-making logic.
+    

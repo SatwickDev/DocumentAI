@@ -1,0 +1,144 @@
+{
+  "quality_metrics": {
+    "blur_score": {
+      "name": "Blur Score",
+      "threshold": 80,
+      "direction": "higher_is_better",
+      "description": "Measures image sharpness using Laplacian variance",
+      "unit": "variance_value",
+      "critical_threshold": 50,
+      "excellent_threshold": 120
+    },
+    "contrast_score": {
+      "name": "Contrast Score",
+      "threshold": 0.2,
+      "direction": "higher_is_better",
+      "description": "Standard deviation of pixel intensities",
+      "unit": "normalized_value",
+      "critical_threshold": 0.1,
+      "excellent_threshold": 0.4
+    },
+    "noise_level": {
+      "name": "Noise Level",
+      "threshold": 0.25,
+      "direction": "lower_is_better",
+      "description": "Estimated noise in the image",
+      "unit": "normalized_value",
+      "critical_threshold": 0.4,
+      "excellent_threshold": 0.1
+    },
+    "sharpness_score": {
+      "name": "Sharpness Score",
+      "threshold": 30,
+      "direction": "higher_is_better",
+      "description": "Edge-based sharpness measurement",
+      "unit": "edge_strength",
+      "critical_threshold": 15,
+      "excellent_threshold": 60
+    },
+    "brightness_score": {
+      "name": "Brightness Score",
+      "threshold": 0.5,
+      "direction": "0.3-0.8 optimal",
+      "description": "Average brightness level of the image",
+      "unit": "normalized_value",
+      "critical_threshold": 0.2,
+      "excellent_threshold": 0.6
+    },
+    "skew_angle": {
+      "name": "Skew Angle (abs)",
+      "threshold": 2,
+      "direction": "lower_is_better",
+      "description": "Absolute skew angle in degrees",
+      "unit": "degrees",
+      "critical_threshold": 5,
+      "excellent_threshold": 0.5
+    },
+    "text_coverage": {
+      "name": "Text Coverage",
+      "threshold": 0.1,
+      "direction": "varies_by_document",
+      "description": "Percentage of page covered by text",
+      "unit": "percentage",
+      "critical_threshold": 0.05,
+      "excellent_threshold": 0.3
+    },
+    "ocr_confidence": {
+      "name": "OCR Confidence",
+      "threshold": 0.7,
+      "direction": "higher_is_better",
+      "description": "Average OCR confidence score",
+      "unit": "confidence_percentage",
+      "critical_threshold": 0.5,
+      "excellent_threshold": 0.9
+    },
+    "margin_safety": {
+      "name": "Margin Safety",
+      "threshold": 0.9,
+      "direction": "higher_is_better",
+      "description": "Safety of text margins from page edges",
+      "unit": "safety_ratio",
+      "critical_threshold": 0.7,
+      "excellent_threshold": 0.95
+    },
+    "duplicate_blank": {
+      "name": "Duplicate/Blank",
+      "threshold": 0.9,
+      "direction": "higher_is_better",
+      "description": "Score indicating non-duplicate, non-blank content",
+      "unit": "uniqueness_score",
+      "critical_threshold": 0.6,
+      "excellent_threshold": 0.98
+    },
+    "compression_artifacts": {
+      "name": "Compression",
+      "threshold": 0.7,
+      "direction": "higher_is_better",
+      "description": "Quality score accounting for compression artifacts",
+      "unit": "quality_score",
+      "critical_threshold": 0.4,
+      "excellent_threshold": 0.9
+    },
+    "page_consistency": {
+      "name": "Page Consistency",
+      "threshold": 0.9,
+      "direction": "higher_is_better",
+      "description": "Consistency score across document pages",
+      "unit": "consistency_ratio",
+      "critical_threshold": 0.7,
+      "excellent_threshold": 0.95
+    }
+  },
+  "overall_document_verdict": {
+    "quality_levels": {
+      "poor": {
+        "threshold": 0.3,
+        "action": "reject_and_request_reupload",
+        "message": "Document quality is too poor for processing. Please re-upload a higher quality document.",
+        "next_step": "user_reupload"
+      },
+      "acceptable": {
+        "threshold": 0.6,
+        "action": "send_to_azure_analysis",
+        "message": "Document quality is acceptable. Sending to Azure Document Analysis for enhanced processing.",
+        "next_step": "azure_document_intelligence"
+      },
+      "good": {
+        "threshold": 0.8,
+        "action": "apply_preprocessing_filters",
+        "message": "Good document quality detected. Applying preprocessing filters for optimal analysis.",
+        "next_step": "preprocessing_pipeline"
+      },
+      "excellent": {
+        "threshold": 1.0,
+        "action": "proceed_direct_analysis",
+        "message": "Excellent document quality. Proceeding with direct analysis without modifications.",
+        "next_step": "direct_analysis"
+      }
+    },
+    "scoring_method": "weighted_average",
+    "critical_metrics_weight": 1.5,
+    "critical_metrics": ["ocr_confidence", "blur_score", "contrast_score"],
+    "minimum_pages_for_consistency_check": 2
+  }
+}

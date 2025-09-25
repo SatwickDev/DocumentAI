@@ -1,0 +1,128 @@
+blur_score:
+  excellent: 2200    # Crisp print, sharp scan
+  good: 1300
+  medium: 600
+  low: 0
+
+contrast_score:
+  excellent: 0.28    # Bank docs: black text on white, but not photo-perfect
+  good: 0.20
+  medium: 0.13
+  low: 0
+
+noise_level:
+  excellent: 0.05
+  good: 0.12
+  medium: 0.25
+  low: 1.0
+
+sharpness_score:
+  excellent: 0.45
+  good: 0.25
+  medium: 0.10
+  low: 0
+
+brightness_score:
+  excellent: 0.70
+  good: 0.50
+  medium: 0.30
+  low: 0
+
+skew_angle:
+  excellent: 0.8    # Up to ~0.8 deg is fine
+  good: 1.5
+  medium: 3.0
+  low: 10.0
+
+confidence_score:
+  excellent: 0.95
+  good: 0.8
+  medium: 0.6
+  low: 0.4
+
+confidence_category:
+  excellent: 0.95
+  good: 0.8
+  medium: 0.6
+  low: 0.0
+
+edge_crop_score:
+  excellent: 0.0
+  good: 0.97
+  medium: 1.2
+  low: 2.0
+
+shadow_glare_score:
+  excellent: 0.01
+  good: 0.10
+  medium: 0.50
+  low: 0.99
+
+blank_page_score:
+  excellent: 0.0
+  good: 0.10
+  medium: 0.975
+  low: 0.999
+
+recommendations:
+  blur_score:
+    good:
+      - "Image is almost sharp. Minor improvement possible via gentle sharpening."
+      - "For pre-processing: try a light unsharp mask or edge enhancement filter."
+    medium:
+      - "Slightly improve focus—avoid scanning through plastic covers."
+      - "For pre-processing: apply mild sharpening to enhance numbers and lines."
+    low:
+      - "Retake the scan or photo using a steady hand and flat surface."
+      - "Ensure the page is not wrinkled or folded."
+      - "For pre-processing: try gentle deblurring algorithms."
+  sharpness_score:
+    good:
+      - "Sharpness is decent. Try a gentle sharpening for better clarity."
+      - "For pre-processing: light edge enhancement may help."
+    medium:
+      - "Increase scanning resolution for better readability."
+      - "For pre-processing: use edge enhancement filters."
+    low:
+      - "Check that the scanner glass is clean and the page is flat."
+      - "For pre-processing: apply gentle sharpening."
+  contrast_score:
+    good:
+      - "Contrast is nearly optimal. Consider local contrast enhancement for small improvement."
+      - "For pre-processing: a minor CLAHE (adaptive histogram equalization) may help."
+    medium:
+      - "If possible, scan in greyscale/binary for crisp text."
+      - "For pre-processing: use adaptive contrast enhancement."
+    low:
+      - "Increase scanner contrast or scan in 'text' mode."
+      - "For pre-processing: apply contrast stretching or adaptive histogram equalization."
+  noise_level:
+    good:
+      - "Noise level is acceptable. Minor denoising can be applied for perfection."
+      - "For pre-processing: try conservative denoising if needed."
+    medium:
+      - "Reduce background artifacts (stamps, marks) if possible."
+      - "For pre-processing: use conservative denoising."
+    low:
+      - "Clean the scanner glass and avoid patterned backgrounds."
+      - "For pre-processing: apply noise reduction filters."
+  brightness_score:
+    good:
+      - "Brightness is good. Ensure even lighting across the page."
+      - "For pre-processing: minor local brightness normalization may help."
+    medium:
+      - "Ensure the entire page is evenly lit, especially at the edges."
+      - "For pre-processing: use local brightness adjustment."
+    low:
+      - "Increase ambient light or scanner brightness to avoid dark backgrounds."
+      - "For pre-processing: apply brightness correction."
+  skew_angle:
+    good:
+      - "Alignment is good. For strict accuracy, slight deskewing can be performed."
+      - "For pre-processing: apply gentle deskew if required."
+    medium:
+      - "Slightly rotate the page for better alignment."
+      - "For pre-processing: use rotation correction."
+    low:
+      - "Align the document with scanner/camera guides for bank forms."
+      - "For pre-processing: apply deskewing algorithms."

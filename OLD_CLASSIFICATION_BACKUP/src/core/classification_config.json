@@ -1,0 +1,38 @@
+{
+    "classification_model": {
+        "name": "enhanced_keyword_classifier",
+        "version": "1.1.0"
+    },
+    "categories": {
+        "Financial": {
+            "keywords": ["invoice", "bill", "receipt", "purchase", "order", "payment", "financial", "cost", "expense", "budget"],
+            "confidence": 0.8,
+            "description": "Financial documents including invoices, purchase orders, receipts, and financial reports"
+        },
+        "Legal": {
+            "keywords": ["contract", "agreement", "legal", "terms", "conditions", "policy", "law", "regulation", "compliance"],
+            "confidence": 0.8,
+            "description": "Legal documents including contracts, agreements, and regulatory documents"
+        },
+        "Report": {
+            "keywords": ["report", "analysis", "summary", "study", "research", "findings", "results", "conclusion"],
+            "confidence": 0.7,
+            "description": "Reports, studies, and analytical documents"
+        },
+        "Document": {
+            "keywords": [],
+            "confidence": 0.5,
+            "description": "General documents that don't fit other categories"
+        }
+    },
+    "processing": {
+        "max_file_size_mb": 50,
+        "supported_formats": ["pdf", "txt", "doc", "docx"],
+        "timeout_seconds": 30
+    },
+    "thresholds": {
+        "minimum_confidence": 0.3,
+        "high_confidence": 0.8,
+        "medium_confidence": 0.6
+    }
+}

@@ -1,0 +1,129 @@
+version: '3.8'
+
+services:
+  # API Gateway (Entry Point)
+  api-gateway:
+    build: ./microservices/api-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - CLASSIFICATION_SERVICE_URL=http://classification-service:8001
+      - QUALITY_SERVICE_URL=http://quality-service:8002
+      - ORCHESTRATOR_SERVICE_URL=http://mcp-orchestrator:8003
+      - NOTIFICATION_SERVICE_URL=http://notification-service:8004
+    depends_on:
+      - classification-service
+      - quality-service
+      - mcp-orchestrator
+      - notification-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - microservices-network
+
+  # Classification Microservice
+  classification-service:
+    build: ./microservices/classification-service
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./config:/app/config:ro
+      - ./src:/app/src:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - microservices-network
+
+  # Quality Analysis Microservice
+  quality-service:
+    build: ./microservices/quality-service
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./config:/app/config:ro
+      - ./src:/app/src:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - microservices-network
+
+  # MCP Orchestrator Microservice
+  mcp-orchestrator:
+    build: ./microservices/mcp-orchestrator
+    ports:
+      - "8003:8003"
+    volumes:
+      - ./src:/app/src:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - microservices-network
+
+  # Notification Microservice
+  notification-service:
+    build: ./microservices/notification-service
+    ports:
+      - "8004:8004"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - microservices-network
+
+  # Frontend (Optional - for development)
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    depends_on:
+      - api-gateway
+    networks:
+      - microservices-network
+
+  # Redis (Optional - for caching and session management)
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - microservices-network
+
+  # PostgreSQL (Optional - for persistent storage)
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: document_processing
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD: secure_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - microservices-network
+
+volumes:
+  redis-data:
+  postgres-data:
+
+networks:
+  microservices-network:
+    driver: bridge

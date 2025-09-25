@@ -1,0 +1,112 @@
+version: '3.8'
+
+services:
+  # Redis Cache
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - doc-network
+
+  # API Gateway
+  api-gateway:
+    image: python:3.11-slim
+    working_dir: /app
+    command: bash -c "pip install -r requirements.txt && uvicorn app:app --host 0.0.0.0 --port 8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./microservices/api-gateway:/app
+    environment:
+      - CLASSIFICATION_SERVICE_URL=http://classification-service:8001
+      - QUALITY_SERVICE_URL=http://quality-service:8002
+      - PREPROCESSING_SERVICE_URL=http://preprocessing-service:8003
+      - ENTITY_SERVICE_URL=http://entity-extraction-service:8004
+      - RULE_ENGINE_SERVICE_URL=http://rule-engine-service:8005
+    depends_on:
+      - redis
+      - classification-service
+      - quality-service
+      - preprocessing-service
+      - entity-extraction-service
+      - rule-engine-service
+    networks:
+      - doc-network
+
+  # Classification Service
+  classification-service:
+    image: python:3.11-slim
+    working_dir: /app
+    command: bash -c "apt-get update && apt-get install -y tesseract-ocr libglib2.0-0 libgl1 libglx0 && pip install -r requirements.txt && PYTHONPATH=/app/src:/app:/app/document_classification_updated uvicorn app:app --host 0.0.0.0 --port 8001"
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./microservices/classification-service:/app
+      - ./config:/app/config:ro
+      - ./src:/app/src:ro
+      - ./document_classification_updated:/app/document_classification_updated
+    environment:
+      - CONFIG_PATH=/app/document_classification_updated/classification_config.json
+    networks:
+      - doc-network
+
+  # Quality Service
+  quality-service:
+    image: python:3.11-slim
+    working_dir: /app
+    command: bash -c "apt-get update && apt-get install -y libglib2.0-0 libgl1 libglx0 && pip install -r requirements.txt && PYTHONPATH=/app/src:/app/quality_analysis_updated:/app uvicorn app:app --host 0.0.0.0 --port 8002"
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./microservices/quality-service:/app
+      - ./config:/app/config:ro
+      - ./src:/app/src:ro
+      - ./quality_analysis_updated:/app/quality_analysis_updated:ro
+    environment:
+      - CONFIG_PATH=/app/config/TresholdConfig.json
+    networks:
+      - doc-network
+
+  # Preprocessing Service
+  preprocessing-service:
+    image: python:3.11-slim
+    working_dir: /app
+    command: bash -c "apt-get update && apt-get install -y libglib2.0-0 tesseract-ocr libgl1 libglx0 && pip install -r requirements.txt && PYTHONPATH=/app/pre_processing_updated:/app uvicorn app:app --host 0.0.0.0 --port 8003"
+    ports:
+      - "8003:8003"
+    volumes:
+      - ./microservices/preprocessing-service:/app
+      - ./pre_processing_updated:/app/pre_processing_updated:ro
+    networks:
+      - doc-network
+
+  # Entity Extraction Service
+  entity-extraction-service:
+    image: python:3.11-slim
+    working_dir: /app
+    command: bash -c "apt-get update && apt-get install -y tesseract-ocr libglib2.0-0 libgl1 libglx0 poppler-utils && pip install -r requirements.txt && PYTHONPATH=/app/src:/app/src/temp:/app uvicorn app:app --host 0.0.0.0 --port 8004"
+    ports:
+      - "8004:8004"
+    volumes:
+      - ./microservices/entity-extraction-service:/app
+      - ./src:/app/src:ro
+      - ./document_classification_updated:/app/document_classification_updated
+    networks:
+      - doc-network
+
+  # Rule Engine Service
+  rule-engine-service:
+    image: python:3.11-slim
+    working_dir: /app
+    command: bash -c "apt-get update && apt-get install -y gcc g++ curl && pip install -r requirements.txt && python -m spacy download en_core_web_sm && uvicorn app:app --host 0.0.0.0 --port 8005"
+    ports:
+      - "8005:8005"
+    volumes:
+      - ./microservices/rule-engine-service:/app
+    networks:
+      - doc-network
+
+networks:
+  doc-network:
+    driver: bridge

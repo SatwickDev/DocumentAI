@@ -1,0 +1,20 @@
+# Bank Guarantee Validation Rules
+# Format: FIELD_TAG: rule description
+
+GUARANTEE_NUMBER: The bank guarantee number should be unique and alphanumeric
+ISSUE_DATE: The issue date should be valid and not be a future date
+EXPIRY_DATE: The expiry date should be greater than issue date and within reasonable period
+ISSUING_BANK: The issuing bank should be authorized and recognized
+BENEFICIARY: The beneficiary details should be complete and accurate
+PRINCIPAL: The principal details should be provided and verified
+GUARANTEE_AMOUNT: The guarantee amount should be numeric and greater than 0
+CURRENCY: The currency should be in ISO 4217 format
+GUARANTEE_TYPE: The guarantee type should be specified (performance, advance payment, warranty, etc.)
+UNDERLYING_CONTRACT: The underlying contract reference should be provided
+GOVERNING_LAW: The governing law should be specified
+JURISDICTION: The jurisdiction for disputes should be mentioned
+TERMS_CONDITIONS: The terms and conditions should be clearly stated
+BANK_SIGNATURE: The bank guarantee should contain authorized bank signature
+BANK_SEAL: The official bank seal should be present
+SWIFT_CODE: The issuing bank SWIFT code should be valid
+VALIDITY_CLAUSE: The validity and expiry conditions should be clear

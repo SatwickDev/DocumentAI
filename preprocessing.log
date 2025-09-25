@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "C:\ilyas\work\python\F2\microservices\preprocessing-service\app.py", line 21, in <module>
+    from preprocessing_ops import preprocess_adaptive
+ImportError: cannot import name 'preprocess_adaptive' from 'preprocessing_ops' (C:\ilyas\work\python\F2\microservices\preprocessing-service\..\..\src\temp\preprocessing_ops.py)

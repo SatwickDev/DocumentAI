@@ -1,0 +1,23 @@
+# Proforma Invoice Validation Rules
+# Format: FIELD_TAG: rule description
+
+INVOICE_NUMBER: The proforma invoice number should be unique and alphanumeric with maximum 20 characters
+INVOICE_DATE: The invoice date should be valid and not be a future date
+SELLER_NAME: The seller name should be provided and contain maximum 100 characters
+SELLER_ADDRESS: The seller address should be complete with all required details
+BUYER_NAME: The buyer name should be provided and verified
+BUYER_ADDRESS: The buyer address should be complete and valid
+CURRENCY: The currency should be in ISO 4217 format
+TOTAL_AMOUNT: The total amount should be numeric and greater than 0
+LINE_ITEMS: The invoice should contain detailed line items
+ITEM_DESCRIPTION: Each item should have clear description
+QUANTITY: The quantity should be numeric and greater than 0
+UNIT_PRICE: The unit price should be numeric and greater than 0
+SUBTOTAL: The subtotal should equal quantity multiplied by unit price
+TAX_RATE: The tax rate should be valid percentage if applicable
+TAX_AMOUNT: The tax amount should be calculated correctly
+TOTAL_CALCULATION: The total should equal subtotal plus tax amount
+PAYMENT_TERMS: The payment terms should be clearly specified
+VALIDITY_PERIOD: The proforma invoice should have validity period specified
+SHIPPING_TERMS: The shipping terms should be specified (FOB, CIF, etc.)
+COUNTRY_OF_ORIGIN: The country of origin should be provided for items

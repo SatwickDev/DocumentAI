@@ -1,0 +1,485 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Enhanced MCP Contracts for Document Processing",
+  "description": "MCP contract definitions for quality analysis, preprocessing, and entity extraction services",
+  "definitions": {
+    "MCPRequest": {
+      "type": "object",
+      "required": ["jsonrpc", "method", "params", "id"],
+      "properties": {
+        "jsonrpc": {
+          "type": "string",
+          "enum": ["2.0"]
+        },
+        "method": {
+          "type": "string"
+        },
+        "params": {
+          "type": "object"
+        },
+        "id": {
+          "type": ["string", "number"]
+        }
+      }
+    },
+    "MCPResponse": {
+      "type": "object",
+      "required": ["jsonrpc", "id"],
+      "oneOf": [
+        {
+          "required": ["result"],
+          "properties": {
+            "jsonrpc": {
+              "type": "string",
+              "enum": ["2.0"]
+            },
+            "result": {
+              "type": "object"
+            },
+            "id": {
+              "type": ["string", "number", "null"]
+            }
+          }
+        },
+        {
+          "required": ["error"],
+          "properties": {
+            "jsonrpc": {
+              "type": "string",
+              "enum": ["2.0"]
+            },
+            "error": {
+              "$ref": "#/definitions/MCPError"
+            },
+            "id": {
+              "type": ["string", "number", "null"]
+            }
+          }
+        }
+      ]
+    },
+    "MCPError": {
+      "type": "object",
+      "required": ["code", "message"],
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": ["object", "string", "null"]
+        }
+      }
+    },
+    "QualityMetrics": {
+      "type": "object",
+      "properties": {
+        "blur_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "contrast_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "noise_level": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "sharpness_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "brightness_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "skew_angle": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "text_coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "ocr_confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "margin_safety": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "edge_crop_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "shadow_glare_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "blank_page_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "resolution_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "EnhancedQualityAnalysisRequest": {
+      "type": "object",
+      "required": ["document"],
+      "properties": {
+        "document": {
+          "type": "string",
+          "format": "base64",
+          "description": "Base64 encoded document"
+        },
+        "apply_preprocessing": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to apply preprocessing if needed"
+        },
+        "save_preprocessed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to save preprocessed document"
+        },
+        "config_path": {
+          "type": "string",
+          "description": "Path to configuration file"
+        }
+      }
+    },
+    "EnhancedQualityAnalysisResponse": {
+      "type": "object",
+      "required": ["total_pages", "overall_score", "verdict", "page_analyses"],
+      "properties": {
+        "total_pages": {
+          "type": "integer"
+        },
+        "overall_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "verdict": {
+          "type": "string",
+          "enum": ["excellent", "good", "needs_preprocessing", "poor"]
+        },
+        "page_analyses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PageAnalysis"
+          }
+        },
+        "critical_issues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "processing_time": {
+          "type": "number"
+        },
+        "preprocessed_pages": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "PageAnalysis": {
+      "type": "object",
+      "required": ["page_number", "metrics"],
+      "properties": {
+        "page_number": {
+          "type": "integer"
+        },
+        "metrics": {
+          "$ref": "#/definitions/QualityMetrics"
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "processing_time": {
+          "type": "number"
+        },
+        "needs_preprocessing": {
+          "type": "boolean"
+        },
+        "preprocessing_applied": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "PreprocessingRequest": {
+      "type": "object",
+      "required": ["document"],
+      "properties": {
+        "document": {
+          "type": "string",
+          "format": "base64",
+          "description": "Base64 encoded document"
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["all", "deskew", "contrast", "denoise", "brightness"]
+          },
+          "default": ["all"]
+        },
+        "return_format": {
+          "type": "string",
+          "enum": ["base64", "file"],
+          "default": "base64"
+        }
+      }
+    },
+    "PreprocessingResponse": {
+      "type": "object",
+      "required": ["status", "operations_applied"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["success", "error"]
+        },
+        "operations_applied": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "format": {
+          "type": "string"
+        },
+        "data": {
+          "type": "string",
+          "format": "base64"
+        },
+        "original_filename": {
+          "type": "string"
+        },
+        "processed_filename": {
+          "type": "string"
+        }
+      }
+    },
+    "EntityExtractionRequest": {
+      "type": "object",
+      "required": ["document"],
+      "properties": {
+        "document": {
+          "type": "string",
+          "format": "base64",
+          "description": "Base64 encoded document"
+        },
+        "document_type": {
+          "type": "string",
+          "enum": ["purchase_order", "invoice", "proforma_invoice", "bank_guarantee", "lc_application", "auto"],
+          "default": "auto"
+        },
+        "confidence_threshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.6
+        },
+        "extract_tables": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "EntityExtractionResponse": {
+      "type": "object",
+      "required": ["status", "document_type", "entities", "confidence"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["success", "error"]
+        },
+        "document_type": {
+          "type": "string"
+        },
+        "entities": {
+          "type": "object",
+          "description": "Extracted entities based on document type"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "filename": {
+          "type": "string"
+        },
+        "text_length": {
+          "type": "integer"
+        },
+        "extraction_method": {
+          "type": "string",
+          "enum": ["specialized", "generic"]
+        }
+      }
+    },
+    "ClassificationWithEntitiesRequest": {
+      "type": "object",
+      "required": ["document"],
+      "properties": {
+        "document": {
+          "type": "string",
+          "format": "base64",
+          "description": "Base64 encoded document"
+        },
+        "extract_entities": {
+          "type": "boolean",
+          "default": false
+        },
+        "apply_preprocessing": {
+          "type": "boolean",
+          "default": true
+        },
+        "quality_check": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "ClassificationWithEntitiesResponse": {
+      "type": "object",
+      "required": ["category", "confidence"],
+      "properties": {
+        "category": {
+          "type": "string"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "entities": {
+          "type": "object"
+        },
+        "quality_analysis": {
+          "$ref": "#/definitions/EnhancedQualityAnalysisResponse"
+        },
+        "preprocessing_applied": {
+          "type": "boolean"
+        }
+      }
+    },
+    "MCPTool": {
+      "type": "object",
+      "required": ["name", "description", "inputSchema"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "inputSchema": {
+          "type": "object"
+        }
+      }
+    }
+  },
+  "tools": {
+    "analyze_quality_enhanced": {
+      "name": "analyze_quality_enhanced",
+      "description": "Analyze document quality with comprehensive metrics and preprocessing options",
+      "inputSchema": {
+        "$ref": "#/definitions/EnhancedQualityAnalysisRequest"
+      }
+    },
+    "preprocess_document": {
+      "name": "preprocess_document",
+      "description": "Apply adaptive preprocessing operations to improve document quality",
+      "inputSchema": {
+        "$ref": "#/definitions/PreprocessingRequest"
+      }
+    },
+    "extract_entities": {
+      "name": "extract_entities",
+      "description": "Extract structured entities from business documents",
+      "inputSchema": {
+        "$ref": "#/definitions/EntityExtractionRequest"
+      }
+    },
+    "classify_with_entities": {
+      "name": "classify_with_entities",
+      "description": "Classify document and optionally extract entities with quality analysis",
+      "inputSchema": {
+        "$ref": "#/definitions/ClassificationWithEntitiesRequest"
+      }
+    },
+    "analyze_preprocessing_needs": {
+      "name": "analyze_preprocessing_needs",
+      "description": "Analyze document to determine required preprocessing operations",
+      "inputSchema": {
+        "type": "object",
+        "required": ["document"],
+        "properties": {
+          "document": {
+            "type": "string",
+            "format": "base64"
+          }
+        }
+      }
+    },
+    "validate_extraction": {
+      "name": "validate_extraction",
+      "description": "Validate extracted entities against expected schema",
+      "inputSchema": {
+        "type": "object",
+        "required": ["entities", "document_type"],
+        "properties": {
+          "entities": {
+            "type": "object"
+          },
+          "document_type": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

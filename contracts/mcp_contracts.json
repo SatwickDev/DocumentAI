@@ -1,0 +1,210 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "MCP Communication Contracts",
+    "description": "JSON Schema for Model Context Protocol (MCP) Communication",
+    "definitions": {
+        "MCPRequest": {
+            "type": "object",
+            "description": "Standard MCP request contract - JSON-RPC 2.0",
+            "required": ["jsonrpc", "id", "method"],
+            "properties": {
+                "jsonrpc": {
+                    "type": "string",
+                    "const": "2.0",
+                    "description": "JSON-RPC version"
+                },
+                "id": {
+                    "oneOf": [
+                        { "type": "integer" },
+                        { "type": "string" }
+                    ],
+                    "description": "Request identifier"
+                },
+                "method": {
+                    "type": "string",
+                    "description": "The RPC method to call"
+                },
+                "params": {
+                    "type": "object",
+                    "description": "Method parameters",
+                    "additionalProperties": true
+                }
+            }
+        },
+        "MCPResponse": {
+            "type": "object",
+            "description": "Standard MCP response contract - JSON-RPC 2.0",
+            "required": ["jsonrpc", "id"],
+            "properties": {
+                "jsonrpc": {
+                    "type": "string",
+                    "const": "2.0",
+                    "description": "JSON-RPC version"
+                },
+                "id": {
+                    "oneOf": [
+                        { "type": "integer" },
+                        { "type": "string" }
+                    ],
+                    "description": "Request identifier that this is a response to"
+                },
+                "result": {
+                    "type": "object",
+                    "description": "The result of the RPC call (if successful)",
+                    "additionalProperties": true
+                },
+                "error": {
+                    "type": "object",
+                    "description": "Error information (if the call failed)",
+                    "properties": {
+                        "code": {
+                            "type": "integer",
+                            "description": "Error code"
+                        },
+                        "message": {
+                            "type": "string",
+                            "description": "Error message"
+                        },
+                        "data": {
+                            "type": "object",
+                            "description": "Additional error data",
+                            "additionalProperties": true
+                        }
+                    },
+                    "required": ["code", "message"]
+                }
+            },
+            "oneOf": [
+                {
+                    "required": ["result"],
+                    "not": { "required": ["error"] }
+                },
+                {
+                    "required": ["error"],
+                    "not": { "required": ["result"] }
+                }
+            ]
+        },
+        "DocumentQualityRequest": {
+            "type": "object",
+            "description": "Request for document quality analysis",
+            "required": ["file_path", "analysis_type"],
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "Path to the document file"
+                },
+                "analysis_type": {
+                    "type": "string",
+                    "enum": ["quick", "full", "detailed"],
+                    "description": "Type of analysis to perform"
+                },
+                "session_id": {
+                    "type": "string",
+                    "description": "Optional session identifier"
+                }
+            }
+        },
+        "DocumentQualityResponse": {
+            "type": "object",
+            "description": "Response from document quality analysis",
+            "required": ["success", "quality_score"],
+            "properties": {
+                "success": {
+                    "type": "boolean",
+                    "description": "Whether the analysis was successful"
+                },
+                "quality_score": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Overall quality score (0-1)"
+                },
+                "metrics": {
+                    "type": "object",
+                    "description": "Detailed quality metrics",
+                    "properties": {
+                        "resolution": {
+                            "type": "number",
+                            "description": "Document resolution in DPI"
+                        },
+                        "file_size": {
+                            "type": "number",
+                            "description": "File size in bytes"
+                        },
+                        "page_count": {
+                            "type": "integer",
+                            "description": "Number of pages"
+                        },
+                        "processing_time": {
+                            "type": "number",
+                            "description": "Processing time in seconds"
+                        }
+                    }
+                },
+                "recommendations": {
+                    "type": "array",
+                    "description": "Quality improvement recommendations",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "DocumentClassificationRequest": {
+            "type": "object",
+            "description": "Request for document classification",
+            "required": ["file_path"],
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "Path to the document file"
+                },
+                "config_override": {
+                    "type": "object",
+                    "description": "Optional classification configuration overrides",
+                    "additionalProperties": true
+                },
+                "session_id": {
+                    "type": "string",
+                    "description": "Optional session identifier"
+                }
+            }
+        },
+        "DocumentClassificationResponse": {
+            "type": "object",
+            "description": "Response from document classification",
+            "required": ["success", "categories"],
+            "properties": {
+                "success": {
+                    "type": "boolean",
+                    "description": "Whether the classification was successful"
+                },
+                "categories": {
+                    "type": "array",
+                    "description": "List of identified categories with confidence scores",
+                    "items": {
+                        "type": "object",
+                        "required": ["category", "confidence"],
+                        "properties": {
+                            "category": {
+                                "type": "string",
+                                "description": "Category name"
+                            },
+                            "confidence": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1,
+                                "description": "Confidence score (0-1)"
+                            }
+                        }
+                    }
+                },
+                "processing_time": {
+                    "type": "number",
+                    "description": "Processing time in seconds"
+                }
+            }
+        }
+    }
+}

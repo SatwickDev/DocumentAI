@@ -1,0 +1,12 @@
+# Purchase Order Validation Rules - Matching Entity Extraction Fields
+# Format: FIELD_TAG: rule description
+
+PO_NUMBER: The PO number must be present and contain at least 5 characters
+PO_DATE: The PO date must be in valid date format (DD.MM.YYYY or similar)
+CURRENCY: The currency must be specified in ISO format (USD, EUR, GBP, etc.)
+TOTAL_VALUE: The total value must be numeric, greater than 0, and properly formatted
+SELLER_NAME: The seller name must be complete with company name and address
+BUYER_NAME: The buyer name must be complete with company name and address
+GOODS_DESCRIPTION: The goods description must be detailed and contain at least 20 characters
+QUANTITY: The quantity must be specified with proper units (MT, KG, PCS, etc.)
+DELIVERY_TERMS: The delivery terms must follow Incoterms format (CFR, FOB, CIF, etc.)

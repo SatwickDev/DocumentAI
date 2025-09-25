@@ -1,0 +1,218 @@
+#!/usr/bin/env python3
+"""
+Classification Microservice
+Dedicated service for document classification
+Port: 8001
+"""
+
+import os
+import sys
+import logging
+from pathlib import Path
+
+# Setup logging with UTF-8 encoding first
+sys.stdout.reconfigure(encoding='utf-8')
+sys.stderr.reconfigure(encoding='utf-8')
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+logger = logging.getLogger(__name__)
+
+# Add paths to Python path
+project_root = Path(__file__).parent.parent.parent
+microservices_path = project_root / "microservices"
+src_path = project_root / "src"
+
+# Add paths to Python path
+for path in [str(project_root), str(src_path), str(microservices_path)]:
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
+# Update PYTHONPATH environment variable
+paths = [str(src_path), str(microservices_path)]
+pythonpath = os.pathsep.join(paths)
+os.environ["PYTHONPATH"] = f"{pythonpath}{os.pathsep}{os.environ.get('PYTHONPATH', '')}"
+
+logger.info(f"Python path: {sys.path}")
+logger.info(f"Project root: {project_root}")
+logger.info(f"Src path: {src_path}")
+logger.info(f"Microservices path: {microservices_path}")
+
+# Now import other dependencies
+import asyncio
+import json
+from fastapi import FastAPI, UploadFile, File, HTTPException, BackgroundTasks
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+import tempfile
+import uuid
+from typing import Optional, Dict, Any
+import uvicorn
+
+# Try importing core modules
+try:
+    from core.document_classifier import classify_document_ultra_fast, PageProcessor
+    logger.info("✅ Successfully imported core modules")
+except ImportError as e:
+    logger.error(f"❌ Failed to import core modules: {e}")
+    logger.error(f"Python path: {sys.path}")
+    raise
+
+# Models for API
+class ClassificationRequest(BaseModel):
+    session_id: Optional[str] = None
+    config_override: Optional[Dict[str, Any]] = None
+
+class ClassificationResponse(BaseModel):
+    success: bool
+    session_id: str
+    result: Optional[Dict[str, Any]] = None
+    error: Optional[str] = None
+    processing_time: float
+
+# FastAPI app
+app = FastAPI(
+    title="Document Classification Microservice",
+    description="Dedicated microservice for document classification",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
+)
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Service state
+service_state = {
+    "initialized": False,
+    "config_loaded": False,
+    "processor_ready": False,
+    "startup_complete": False
+}
+
+# Global configuration
+config = None
+processor = None
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    if not service_state["startup_complete"]:
+        raise HTTPException(
+            status_code=503,
+            detail="Service initialization in progress"
+        )
+    
+    return {
+        "status": "healthy",
+        "initialized": service_state["initialized"],
+        "config_loaded": service_state["config_loaded"],
+        "processor_ready": service_state["processor_ready"],
+        "startup_complete": service_state["startup_complete"]
+    }
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize the service with proper error handling"""
+    global config, processor, service_state
+    
+    try:
+        logger.info("🚀 Starting Classification Service initialization...")
+        
+        # Step 1: Load configuration
+        config_path = project_root / "src" / "core" / "classification_config.json"
+        if not config_path.exists():
+            raise FileNotFoundError(f"Configuration file not found at {config_path}")
+            
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+        logger.info("✅ Configuration loaded successfully")
+        service_state["config_loaded"] = True
+        
+        # Step 2: Initialize processor
+        processor = PageProcessor()
+        if not processor:
+            raise Exception("Failed to initialize PageProcessor")
+        logger.info("✅ PageProcessor initialized")
+        service_state["processor_ready"] = True
+        
+        # Step 3: Final initialization
+        service_state["initialized"] = True
+        service_state["startup_complete"] = True
+        logger.info("✅ Classification Service initialization complete")
+        logger.info("🎯 Service ready for connections")
+        
+    except Exception as e:
+        logger.error(f"❌ Service initialization failed: {str(e)}")
+        raise
+
+@app.post("/classify", response_model=ClassificationResponse)
+async def classify_document(
+    file: UploadFile = File(...),
+    background_tasks: BackgroundTasks = None,
+    session_id: Optional[str] = None,
+    config_override: Optional[Dict[str, Any]] = None
+):
+    """Classify a document using the current configuration"""
+    if not service_state["startup_complete"]:
+        raise HTTPException(
+            status_code=503,
+            detail="Service not fully initialized"
+        )
+        
+    if not processor:
+        raise HTTPException(
+            status_code=503,
+            detail="Document processor not available"
+        )
+
+    try:
+        # Generate session ID if not provided
+        if not session_id:
+            session_id = str(uuid.uuid4())
+
+        # Create temporary file
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            content = await file.read()
+            temp_file.write(content)
+            temp_file.flush()
+            
+            # Process document
+            start_time = time.time()
+            result = await classify_document_ultra_fast(
+                temp_file.name,
+                processor,
+                config_override or {}
+            )
+            processing_time = time.time() - start_time
+
+            # Clean up
+            background_tasks.add_task(os.unlink, temp_file.name)
+
+            return ClassificationResponse(
+                success=True,
+                session_id=session_id,
+                result=result,
+                processing_time=processing_time
+            )
+
+    except Exception as e:
+        logger.error(f"Classification error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Classification failed: {str(e)}"
+        )
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8001)

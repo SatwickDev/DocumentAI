@@ -1,0 +1,66 @@
+# MCP Document Processing System - Requirements
+# Install with: pip install -r requirements.txt
+
+# Web Framework & API
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+httpx>=0.25.0
+
+# Data Validation & Serialization  
+pydantic>=2.0.0
+python-jose[cryptography]>=3.3.0
+
+# MCP Protocol
+mcp>=0.4.0
+
+# Document Processing
+PyMuPDF>=1.23.0
+pytesseract>=0.3.10
+Pillow>=10.0.0
+
+# Image Processing & Analysis
+opencv-python>=4.8.0
+numpy>=1.24.0
+
+# Performance & Utilities
+numba>=0.58.0
+aiofiles>=23.0.0
+requests>=2.31.0
+asyncio-throttle>=1.0.2
+
+# Development & Testing
+gradio>=4.0.0  # For optional web interface
+
+# Document processing
+python-docx==1.1.0          # DOCX support
+openpyxl==3.1.2             # Excel support
+xlrd==2.0.1                 # Excel reading
+
+# Optimization
+numba==0.58.1               # JIT compilation for performance
+
+# Web framework and API
+fastapi==0.104.1            # Modern web framework
+uvicorn==0.24.0             # ASGI server
+httpx==0.25.2               # Async HTTP client
+
+# MCP (Model Context Protocol)
+# Note: Replace with actual MCP package when available
+# For now, you may need to install from source or use alternative
+# mcp==0.1.0
+
+# Development and testing
+pytest==7.4.3              # Testing framework
+pytest-asyncio==0.21.1     # Async testing support
+
+# Utilities
+python-multipart==0.0.6    # File upload support
+aiofiles==23.2.1            # Async file operations
+
+# Optional: For production deployment
+gunicorn==21.2.0            # Production WSGI server
+redis==5.0.1                # Caching and session storage
+
+# Logging and monitoring
+structlog==23.2.0           # Structured logging

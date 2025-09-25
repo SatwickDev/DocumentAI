@@ -1,0 +1,133 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Model Context Protocol (MCP) Contracts",
+    "description": "Complete schema for MCP communication and services",
+    "definitions": {
+        "MCPMessage": {
+            "type": "object",
+            "description": "Base message structure for all MCP communications",
+            "required": ["jsonrpc", "id"],
+            "properties": {
+                "jsonrpc": {
+                    "type": "string",
+                    "const": "2.0",
+                    "description": "JSON-RPC version"
+                },
+                "id": {
+                    "oneOf": [
+                        { "type": "integer" },
+                        { "type": "string" }
+                    ],
+                    "description": "Message identifier"
+                }
+            }
+        },
+        "MCPRequest": {
+            "allOf": [
+                { "$ref": "#/definitions/MCPMessage" },
+                {
+                    "type": "object",
+                    "required": ["method"],
+                    "properties": {
+                        "method": {
+                            "type": "string",
+                            "description": "Name of the method to call"
+                        },
+                        "params": {
+                            "type": "object",
+                            "description": "Method parameters",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            ]
+        },
+        "MCPResponse": {
+            "allOf": [
+                { "$ref": "#/definitions/MCPMessage" },
+                {
+                    "type": "object",
+                    "oneOf": [
+                        {
+                            "required": ["result"],
+                            "properties": {
+                                "result": {
+                                    "type": "object",
+                                    "description": "Result of successful call",
+                                    "additionalProperties": true
+                                }
+                            },
+                            "not": { "required": ["error"] }
+                        },
+                        {
+                            "required": ["error"],
+                            "properties": {
+                                "error": {
+                                    "type": "object",
+                                    "required": ["code", "message"],
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "description": "Error code"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error description"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "description": "Additional error data",
+                                            "additionalProperties": true
+                                        }
+                                    }
+                                }
+                            },
+                            "not": { "required": ["result"] }
+                        }
+                    ]
+                }
+            ]
+        },
+        "MCPTool": {
+            "type": "object",
+            "description": "Definition of an MCP tool",
+            "required": ["name", "description", "inputSchema"],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Tool name"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Tool description"
+                },
+                "inputSchema": {
+                    "type": "object",
+                    "description": "JSON Schema for tool input",
+                    "additionalProperties": true
+                }
+            }
+        },
+        "MCPContext": {
+            "type": "object",
+            "description": "Context information for MCP operations",
+            "required": ["sessionId", "timestamp"],
+            "properties": {
+                "sessionId": {
+                    "type": "string",
+                    "description": "Unique session identifier"
+                },
+                "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Operation timestamp"
+                },
+                "metadata": {
+                    "type": "object",
+                    "description": "Additional context metadata",
+                    "additionalProperties": true
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,26 @@
+PURCHASE ORDER
+
+PO NUMBER: PO-2024-001 DATED 15.01.2024
+
+SELLER
+ABC Trading Company Limited
+123 Business Street
+Dubai, UAE
+
+BUYER
+XYZ Corporation
+456 Corporate Avenue
+United Arab Emirates
+
+DESCRIPTION OF GOODS
+High Quality Steel Pipes and Fittings for Construction Project
+Specification: Grade A Steel, Various Sizes
+
+QUANTITY: 500.00 MT
+
+TOTAL VALUE: USD 125,000.00
+
+DELIVERY TERMS: CFR DUBAI SEAPORT (INCOTERMS 2020)
+
+PARTIAL SHIPMENT: NOT ALLOWED
+TRANSHIPMENT: NOT ALLOWED

@@ -1,0 +1,25 @@
+# Invoice Validation Rules
+# Format: FIELD_TAG: rule description
+
+INVOICE_NUMBER: The invoice number should be unique and alphanumeric with maximum 20 characters
+INVOICE_DATE: The invoice date should be valid and not be a future date
+DUE_DATE: The due date should be greater than invoice date
+SELLER_NAME: The seller name should be provided and contain maximum 100 characters
+SELLER_ADDRESS: The seller address should be complete with required details
+SELLER_TAX_ID: The seller tax identification number should be valid
+BUYER_NAME: The buyer name should be provided and verified
+BUYER_ADDRESS: The buyer address should be complete and valid
+BUYER_TAX_ID: The buyer tax identification number should be provided
+CURRENCY: The currency should be in ISO 4217 format
+LINE_ITEMS: The invoice should contain detailed line items
+ITEM_DESCRIPTION: Each item should have clear and complete description
+QUANTITY: The quantity should be numeric and greater than 0
+UNIT_PRICE: The unit price should be numeric and greater than 0
+LINE_TOTAL: The line total should equal quantity multiplied by unit price
+SUBTOTAL: The subtotal should equal sum of all line totals
+TAX_RATE: The tax rate should be valid percentage
+TAX_AMOUNT: The tax amount should be calculated correctly based on applicable rates
+TOTAL_AMOUNT: The total amount should equal subtotal plus tax amount
+PAYMENT_TERMS: The payment terms should be clearly specified
+PAYMENT_METHOD: The payment method should be specified (bank transfer, check, etc.)
+BANK_DETAILS: Bank details should be provided for electronic payments

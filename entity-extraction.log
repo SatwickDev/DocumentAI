@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "C:\ilyas\work\python\F2\microservices\entity-extraction-service\app.py", line 22, in <module>
+    from purchase_order import PurchaseOrderExtractor
+  File "C:\ilyas\work\python\F2\microservices\entity-extraction-service\..\..\src\temp\purchase_order.py", line 2, in <module>
+    from .base import BaseExtractor
+ImportError: attempted relative import with no known parent package
